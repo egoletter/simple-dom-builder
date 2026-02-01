@@ -151,17 +151,5 @@ function fragment(...children) {
 	return frag;
 }
 
-// Export untuk ES6 modules (opsional)
-if (typeof module !== 'undefined') {
-	module.exports !== 'undefined' ? module.exports = {
-		createElement,
-		$,
-		mount,
-		fragment
-	} : export {
-		createElement,
-		$,
-		mount,
-		fragment
-	};
-}
+
+export { createElement, $, mount, fragment }
