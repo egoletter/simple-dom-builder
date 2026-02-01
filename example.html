@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>DOM Builder - Contoh Penggunaan</title>
+	<style>
+		body {
+			font-family: system-ui, -apple-system, sans-serif;
+			max-width: 800px;
+			margin: 40px auto;
+			padding: 20px;
+			background: #f5f5f5;
+		}
+		.card {
+			background: white;
+			padding: 20px;
+			border-radius: 8px;
+			box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+			margin-bottom: 20px;
+		}
+		.btn {
+			padding: 10px 20px;
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;
+			font-size: 14px;
+			margin: 5px;
+		}
+		.btn-primary {
+			background: #007bff;
+			color: white;
+		}
+		.btn-success {
+			background: #28a745;
+			color: white;
+		}
+		.btn-danger {
+			background: #dc3545;
+			color: white;
+		}
+		.product {
+			display: flex;
+			gap: 15px;
+			align-items: center;
+			padding: 15px;
+			border: 1px solid #ddd;
+			border-radius: 6px;
+			margin: 10px 0;
+		}
+		.product img {
+			width: 80px;
+			height: 80px;
+			object-fit: cover;
+			border-radius: 4px;
+		}
+		input, textarea {
+			width: 100%;
+			padding: 8px;
+			margin: 5px 0;
+			border: 1px solid #ddd;
+			border-radius: 4px;
+			box-sizing: border-box;
+		}
+	</style>
+</head>
+<body>
+	<div id="app"></div>
+
+	<script src="dom-builder.js"></script>
+	<script>
+		// ============================================
+		// CONTOH 1: Card Sederhana
+		// ============================================
+		const simpleCard = $.div(
+			{
+				className: 'card'
+			},
+			$.h2({}, 'Contoh 1: Card Sederhana'),
+			$.p({}, 'Ini adalah card yang dibuat dengan DOM Builder.'),
+			$.p({}, 'Tidak perlu lagi document.createElement berulang-ulang!')
+		);
+
+		// ============================================
+		// CONTOH 2: Card dengan Event Handler
+		// ============================================
+		let counter = 0;
+
+		const counterDisplay = $.h3({}, `Counter: ${counter}`);
+
+		const buttonCard = $.div(
+			{
+				className: 'card'
+			},
+			$.h2({}, 'Contoh 2: Event Handlers'),
+			counterDisplay,
+			$.div({},
+				$.button(
+					{
+						className: 'btn btn-primary',
+						onClick: () => {
+							counter++;
+							counterDisplay.textContent = `Counter: ${counter}`;
+						}
+					},
+					'➕ Increment'
+				),
+				$.button(
+					{
+						className: 'btn btn-danger',
+						onClick: () => {
+							counter--;
+							counterDisplay.textContent = `Counter: ${counter}`;
+						}
+					},
+					'➖ Decrement'
+				),
+				$.button(
+					{
+						className: 'btn btn-success',
+						onClick: () => {
+							counter = 0;
+							counterDisplay.textContent = `Counter: ${counter}`;
+						}
+					},
+					'🔄 Reset'
+				)
+			)
+		);
+
+		// ============================================
+		// CONTOH 3: Form dengan Input
+		// ============================================
+		const resultDiv = $.div({
+			style: {
+				marginTop: '15px',
+				padding: '10px',
+				background: '#e9ecef',
+				borderRadius: '4px'
+			}
+		});
+
+		const formCard = $.div(
+			{
+				className: 'card'
+			},
+			$.h2({}, 'Contoh 3: Form Input'),
+			$.form(
+				{
+					onSubmit: (e) => {
+						e.preventDefault();
+						const formData = new FormData(e.target);
+						const name = formData.get('name');
+						const message = formData.get('message');
+
+						resultDiv.innerHTML = '';
+						resultDiv.appendChild(
+							$.div(
+								{},
+								$.strong({}, 'Nama: '),
+								name,
+								$.br(),
+								$.strong({}, 'Pesan: '),
+								message
+							)
+						);
+					}
+				},
+				$.label({}, 'Nama:'),
+				$.input({
+					type: 'text',
+					name: 'name',
+					placeholder: 'Masukkan nama anda',
+					required: true
+				}),
+				$.label({}, 'Pesan:'),
+				$.textarea({
+					name: 'message',
+					rows: 3,
+					placeholder: 'Tulis pesan anda',
+					required: true
+				}),
+				$.button(
+					{
+						type: 'submit',
+						className: 'btn btn-primary',
+						style: {
+							marginTop: '10px'
+						}
+					},
+					'📤 Kirim'
+				)
+			),
+			resultDiv
+		);
+
+		// ============================================
+		// CONTOH 4: List Dinamis
+		// ============================================
+		const products = [{
+			id: 1,
+			name: 'Laptop',
+			price: 15000000,
+			image: 'https://via.placeholder.com/80/4A90E2/ffffff?text=Laptop'
+		},
+			{
+				id: 2,
+				name: 'Mouse',
+				price: 150000,
+				image: 'https://via.placeholder.com/80/50E3C2/ffffff?text=Mouse'
+			},
+			{
+				id: 3,
+				name: 'Keyboard',
+				price: 500000,
+				image: 'https://via.placeholder.com/80/F5A623/ffffff?text=Keyboard'
+			}];
+
+		const productList = $.div(
+			{
+				className: 'card'
+			},
+			$.h2({}, 'Contoh 4: List Dinamis'),
+			...products.map(product =>
+				$.div(
+					{
+						className: 'product',
+						dataset: {
+							id: product.id
+						}
+					},
+					$.img({
+						src: product.image,
+						alt: product.name
+					}),
+					$.div(
+						{},
+						$.h4({
+							style: {
+								margin: '0 0 5px 0'
+							}
+						}, product.name),
+						$.p(
+							{
+								style: {
+									margin: 0, color: '#666'
+								}
+							},
+							`Rp ${product.price.toLocaleString('id-ID')}`
+						)
+					),
+					$.button(
+						{
+							className: 'btn btn-success',
+							onClick: () => alert(`Membeli ${product.name}`)
+						},
+						'🛒 Beli'
+					)
+				)
+			)
+		);
+
+		// ============================================
+		// CONTOH 5: Nested Elements Kompleks
+		// ============================================
+		const complexCard = $.div(
+			{
+				className: 'card'
+			},
+			$.h2({}, 'Contoh 5: Nested Elements'),
+			$.div(
+				{},
+				$.h3({}, 'Data Attributes & Styling'),
+				$.ul(
+					{
+						style: {
+							listStyle: 'none', padding: 0
+						}
+					},
+					$.li(
+						{
+							dataset: {
+								status: 'active', priority: 'high'
+							},
+							style: {
+								padding: '10px',
+								background: '#d4edda',
+								marginBottom: '5px',
+								borderRadius: '4px'
+							}
+						},
+						'✅ Task 1 - High Priority'
+					),
+					$.li(
+						{
+							dataset: {
+								status: 'pending', priority: 'medium'
+							},
+							style: {
+								padding: '10px',
+								background: '#fff3cd',
+								marginBottom: '5px',
+								borderRadius: '4px'
+							}
+						},
+						'⏳ Task 2 - Medium Priority'
+					),
+					$.li(
+						{
+							dataset: {
+								status: 'inactive', priority: 'low'
+							},
+							style: {
+								padding: '10px',
+								background: '#f8d7da',
+								marginBottom: '5px',
+								borderRadius: '4px'
+							}
+						},
+						'❌ Task 3 - Low Priority'
+					)
+				)
+			)
+		);
+
+		// ============================================
+		// Mount semua ke DOM
+		// ============================================
+		mount(
+			'#app',
+			$.h1({}, '🚀 DOM Builder - Contoh Penggunaan'),
+			simpleCard,
+			buttonCard,
+			formCard,
+			productList,
+			complexCard
+		);
+	</script>
+</body>
+</html>
