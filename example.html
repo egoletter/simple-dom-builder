@@ -1,340 +1,608 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>DOM Builder - Contoh Penggunaan</title>
-	<style>
-		body {
-			font-family: system-ui, -apple-system, sans-serif;
-			max-width: 800px;
-			margin: 40px auto;
-			padding: 20px;
-			background: #f5f5f5;
-		}
-		.card {
-			background: white;
-			padding: 20px;
-			border-radius: 8px;
-			box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-			margin-bottom: 20px;
-		}
-		.btn {
-			padding: 10px 20px;
-			border: none;
-			border-radius: 4px;
-			cursor: pointer;
-			font-size: 14px;
-			margin: 5px;
-		}
-		.btn-primary {
-			background: #007bff;
-			color: white;
-		}
-		.btn-success {
-			background: #28a745;
-			color: white;
-		}
-		.btn-danger {
-			background: #dc3545;
-			color: white;
-		}
-		.product {
-			display: flex;
-			gap: 15px;
-			align-items: center;
-			padding: 15px;
-			border: 1px solid #ddd;
-			border-radius: 6px;
-			margin: 10px 0;
-		}
-		.product img {
-			width: 80px;
-			height: 80px;
-			object-fit: cover;
-			border-radius: 4px;
-		}
-		input, textarea {
-			width: 100%;
-			padding: 8px;
-			margin: 5px 0;
-			border: 1px solid #ddd;
-			border-radius: 4px;
-			box-sizing: border-box;
-		}
-	</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DOM Builder - Advanced Examples</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      margin: 5px;
+      transition: all 0.3s;
+    }
+    .btn-primary { background: #007bff; color: white; }
+    .btn-success { background: #28a745; color: white; }
+    .btn-danger { background: #dc3545; color: white; }
+    .btn-warning { background: #ffc107; color: #000; }
+    .btn-info { background: #17a2b8; color: white; }
+    .btn:hover { opacity: 0.8; transform: translateY(-1px); }
+    
+    .demo-box {
+      padding: 15px;
+      border: 2px dashed #ddd;
+      border-radius: 6px;
+      margin: 10px 0;
+      min-height: 50px;
+    }
+    .item {
+      padding: 10px;
+      margin: 5px 0;
+      background: #e9ecef;
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .highlight { background: #fff3cd; border: 2px solid #ffc107; }
+    .fade-in {
+      animation: fadeIn 0.5s;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    pre {
+      background: #f4f4f4;
+      padding: 10px;
+      border-radius: 4px;
+      overflow-x: auto;
+    }
+    code {
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+    }
+  </style>
 </head>
 <body>
-	<div id="app"></div>
+  <div id="app"></div>
+  
+  <script src="dom-builder.js"></script>
+  <script>
+    // ============================================
+    // CONTOH 1: Query Selectors
+    // ============================================
+    const selectorCard = $.div(
+      { className: 'card' },
+      $.h2({}, '🔍 Query Selectors'),
+      $.div(
+        { className: 'demo-box', id: 'selector-demo' },
+        $.div({ className: 'item test-item' }, 'Item 1'),
+        $.div({ className: 'item test-item' }, 'Item 2'),
+        $.div({ className: 'item test-item' }, 'Item 3')
+      ),
+      $.div(
+        {},
+        $.button(
+          {
+            className: 'btn btn-primary',
+            onClick: () => {
+              // qs - querySelector
+              const first = qs('.test-item');
+              css.add(first, 'highlight');
+              setTimeout(() => css.remove(first, 'highlight'), 1000);
+            }
+          },
+          'Highlight First (qs)'
+        ),
+        $.button(
+          {
+            className: 'btn btn-success',
+            onClick: () => {
+              // qsa - querySelectorAll (returns array)
+              const items = qsa('.test-item');
+              items.forEach((item, i) => {
+                setTimeout(() => {
+                  css.add(item, 'highlight');
+                  setTimeout(() => css.remove(item, 'highlight'), 500);
+                }, i * 300);
+              });
+            }
+          },
+          'Highlight All (qsa)'
+        ),
+        $.button(
+          {
+            className: 'btn btn-info',
+            onClick: () => {
+              // byId
+              const box = byId('selector-demo');
+              style(box, { border: '3px solid #17a2b8' });
+              setTimeout(() => style(box, { border: '2px dashed #ddd' }), 1000);
+            }
+          },
+          'Highlight Box (byId)'
+        )
+      ),
+      $.pre({}, $.code({}, `// Query Selectors
+const first = qs('.test-item');          // querySelector
+const all = qsa('.test-item');           // querySelectorAll (array)
+const box = byId('selector-demo');       // getElementById
+const items = byClass('test-item');      // getElementsByClassName (array)
+const divs = byTag('div');               // getElementsByTagName (array)`))
+    );
 
-	<script src="dom-builder.js"></script>
-	<script>
-		// ============================================
-		// CONTOH 1: Card Sederhana
-		// ============================================
-		const simpleCard = $.div(
-			{
-				className: 'card'
-			},
-			$.h2({}, 'Contoh 1: Card Sederhana'),
-			$.p({}, 'Ini adalah card yang dibuat dengan DOM Builder.'),
-			$.p({}, 'Tidak perlu lagi document.createElement berulang-ulang!')
-		);
+    // ============================================
+    // CONTOH 2: DOM Manipulation
+    // ============================================
+    const manipulationCard = $.div(
+      { className: 'card' },
+      $.h2({}, '✂️ DOM Manipulation'),
+      $.div({ className: 'demo-box', id: 'manip-demo' }),
+      $.div(
+        {},
+        $.button(
+          {
+            className: 'btn btn-primary',
+            onClick: () => {
+              // mount - append element
+              const newItem = $.div({ className: 'item fade-in' }, 
+                `Item ${qsa('#manip-demo .item').length + 1}`,
+                $.button(
+                  { 
+                    className: 'btn btn-danger',
+                    onClick: (e) => remove(e.target.parentElement)
+                  },
+                  '✕'
+                )
+              );
+              mount('#manip-demo', newItem);
+            }
+          },
+          '➕ Add Item (mount)'
+        ),
+        $.button(
+          {
+            className: 'btn btn-success',
+            onClick: () => {
+              // prepend - insert di awal
+              const newItem = $.div({ className: 'item fade-in' }, 
+                '🆕 Prepended Item',
+                $.button(
+                  { 
+                    className: 'btn btn-danger',
+                    onClick: (e) => remove(e.target.parentElement)
+                  },
+                  '✕'
+                )
+              );
+              prepend('#manip-demo', newItem);
+            }
+          },
+          '⬆️ Prepend Item'
+        ),
+        $.button(
+          {
+            className: 'btn btn-warning',
+            onClick: () => {
+              // empty - remove all children
+              empty('#manip-demo');
+            }
+          },
+          '🗑️ Clear All (empty)'
+        ),
+        $.button(
+          {
+            className: 'btn btn-info',
+            onClick: () => {
+              // clone - duplicate element
+              const items = qsa('#manip-demo .item');
+              if (items.length > 0) {
+                const cloned = clone(items[0]);
+                cloned.textContent = '📋 Cloned: ' + items[0].textContent;
+                mount('#manip-demo', cloned);
+              }
+            }
+          },
+          '📋 Clone First'
+        )
+      ),
+      $.pre({}, $.code({}, `// DOM Manipulation
+mount('#parent', element);         // append element
+prepend('#parent', element);       // insert at start
+remove('#element');                // remove element
+empty('#parent');                  // remove all children
+clone('#element', deep);           // clone element
+before('#ref', newEl);            // insert before
+after('#ref', newEl);             // insert after
+replace('#parent', new, old);     // replace child`))
+    );
 
-		// ============================================
-		// CONTOH 2: Card dengan Event Handler
-		// ============================================
-		let counter = 0;
+    // ============================================
+    // CONTOH 3: Insert Adjacent
+    // ============================================
+    const insertCard = $.div(
+      { className: 'card' },
+      $.h2({}, '📌 Insert Adjacent'),
+      $.div(
+        { className: 'demo-box' },
+        $.div({ id: 'reference-el', className: 'item', style: { background: '#007bff', color: 'white' } }, 
+          '🎯 Reference Element'
+        )
+      ),
+      $.div(
+        {},
+        $.button(
+          {
+            className: 'btn btn-primary',
+            onClick: () => {
+              // beforebegin - before the element
+              const el = $.div({ className: 'item fade-in' }, '↑ beforebegin');
+              insertEl('#reference-el', 'beforebegin', el);
+            }
+          },
+          'Before Element'
+        ),
+        $.button(
+          {
+            className: 'btn btn-success',
+            onClick: () => {
+              // afterbegin - first child
+              const el = $.div({ className: 'item fade-in', style: { marginLeft: '20px' } }, '↓ afterbegin (first child)');
+              insertEl('#reference-el', 'afterbegin', el);
+            }
+          },
+          'First Child'
+        ),
+        $.button(
+          {
+            className: 'btn btn-warning',
+            onClick: () => {
+              // beforeend - last child
+              const el = $.div({ className: 'item fade-in', style: { marginLeft: '20px' } }, '↑ beforeend (last child)');
+              insertEl('#reference-el', 'beforeend', el);
+            }
+          },
+          'Last Child'
+        ),
+        $.button(
+          {
+            className: 'btn btn-info',
+            onClick: () => {
+              // afterend - after the element
+              const el = $.div({ className: 'item fade-in' }, '↓ afterend');
+              insertEl('#reference-el', 'afterend', el);
+            }
+          },
+          'After Element'
+        ),
+        $.button(
+          {
+            className: 'btn btn-danger',
+            onClick: () => {
+              // Reset - remove all except reference
+              const parent = qs('#reference-el').parentElement;
+              const ref = qs('#reference-el');
+              empty(parent);
+              mount(parent, ref);
+            }
+          },
+          '🔄 Reset'
+        )
+      ),
+      $.pre({}, $.code({}, `// Insert Adjacent
+insertEl('#ref', 'beforebegin', el);  // before element
+insertEl('#ref', 'afterbegin', el);   // first child
+insertEl('#ref', 'beforeend', el);    // last child
+insertEl('#ref', 'afterend', el);     // after element
+insertHTML('#ref', position, html);   // insert HTML string`))
+    );
 
-		const counterDisplay = $.h3({}, `Counter: ${counter}`);
+    // ============================================
+    // CONTOH 4: Class Manipulation
+    // ============================================
+    const classCard = $.div(
+      { className: 'card' },
+      $.h2({}, '🎨 Class Manipulation'),
+      $.div(
+        { id: 'class-demo', className: 'demo-box item' },
+        'Try the buttons below!'
+      ),
+      $.div(
+        {},
+        $.button(
+          {
+            className: 'btn btn-primary',
+            onClick: () => css.add('#class-demo', 'highlight')
+          },
+          '➕ Add Class'
+        ),
+        $.button(
+          {
+            className: 'btn btn-danger',
+            onClick: () => css.remove('#class-demo', 'highlight')
+          },
+          '➖ Remove Class'
+        ),
+        $.button(
+          {
+            className: 'btn btn-warning',
+            onClick: () => css.toggle('#class-demo', 'highlight')
+          },
+          '🔄 Toggle Class'
+        ),
+        $.button(
+          {
+            className: 'btn btn-info',
+            onClick: () => {
+              const has = css.has('#class-demo', 'highlight');
+              alert(`Has highlight class: ${has}`);
+            }
+          },
+          '❓ Has Class'
+        ),
+        $.button(
+          {
+            className: 'btn btn-success',
+            onClick: () => css.replace('#class-demo', 'item', 'highlight')
+          },
+          '♻️ Replace Class'
+        )
+      ),
+      $.pre({}, $.code({}, `// Class Manipulation
+css.add('#el', 'class1', 'class2');     // add classes
+css.remove('#el', 'class');              // remove class
+css.toggle('#el', 'class', force);       // toggle class
+css.has('#el', 'class');                 // check class
+css.replace('#el', 'old', 'new');       // replace class`))
+    );
 
-		const buttonCard = $.div(
-			{
-				className: 'card'
-			},
-			$.h2({}, 'Contoh 2: Event Handlers'),
-			counterDisplay,
-			$.div({},
-				$.button(
-					{
-						className: 'btn btn-primary',
-						onClick: () => {
-							counter++;
-							counterDisplay.textContent = `Counter: ${counter}`;
-						}
-					},
-					'➕ Increment'
-				),
-				$.button(
-					{
-						className: 'btn btn-danger',
-						onClick: () => {
-							counter--;
-							counterDisplay.textContent = `Counter: ${counter}`;
-						}
-					},
-					'➖ Decrement'
-				),
-				$.button(
-					{
-						className: 'btn btn-success',
-						onClick: () => {
-							counter = 0;
-							counterDisplay.textContent = `Counter: ${counter}`;
-						}
-					},
-					'🔄 Reset'
-				)
-			)
-		);
+    // ============================================
+    // CONTOH 5: Attributes & Data
+    // ============================================
+    const attrCard = $.div(
+      { className: 'card' },
+      $.h2({}, '🏷️ Attributes & Data'),
+      $.div(
+        { 
+          id: 'attr-demo', 
+          className: 'demo-box item',
+          'data-user': 'john',
+          'data-role': 'admin',
+          title: 'Original Title'
+        },
+        'Hover untuk lihat title attribute'
+      ),
+      $.div(
+        {},
+        $.button(
+          {
+            className: 'btn btn-primary',
+            onClick: () => {
+              attr.set('#attr-demo', 'title', 'Title Changed!');
+              alert('Title attribute changed! Hover to see.');
+            }
+          },
+          'Set Title'
+        ),
+        $.button(
+          {
+            className: 'btn btn-success',
+            onClick: () => {
+              const title = attr.get('#attr-demo', 'title');
+              alert(`Current title: ${title}`);
+            }
+          },
+          'Get Title'
+        ),
+        $.button(
+          {
+            className: 'btn btn-warning',
+            onClick: () => {
+              data.set('#attr-demo', 'timestamp', Date.now());
+              alert(`Data timestamp set: ${data.get('#attr-demo', 'timestamp')}`);
+            }
+          },
+          'Set Data'
+        ),
+        $.button(
+          {
+            className: 'btn btn-info',
+            onClick: () => {
+              const user = data.get('#attr-demo', 'user');
+              const role = data.get('#attr-demo', 'role');
+              alert(`User: ${user}, Role: ${role}`);
+            }
+          },
+          'Get Data'
+        ),
+        $.button(
+          {
+            className: 'btn btn-danger',
+            onClick: () => attr.toggle('#attr-demo', 'disabled')
+          },
+          'Toggle Disabled'
+        )
+      ),
+      $.pre({}, $.code({}, `// Attributes
+attr.set('#el', 'title', 'New Title');   // set attribute
+attr.get('#el', 'title');                 // get attribute
+attr.remove('#el', 'title');              // remove attribute
+attr.has('#el', 'title');                 // check attribute
+attr.toggle('#el', 'disabled');           // toggle attribute
 
-		// ============================================
-		// CONTOH 3: Form dengan Input
-		// ============================================
-		const resultDiv = $.div({
-			style: {
-				marginTop: '15px',
-				padding: '10px',
-				background: '#e9ecef',
-				borderRadius: '4px'
-			}
-		});
+// Data Attributes
+data.set('#el', 'user', 'john');          // set data-user
+data.get('#el', 'user');                  // get data-user
+data.remove('#el', 'user');               // remove data-user
+data.has('#el', 'user');                  // check data-user`))
+    );
 
-		const formCard = $.div(
-			{
-				className: 'card'
-			},
-			$.h2({}, 'Contoh 3: Form Input'),
-			$.form(
-				{
-					onSubmit: (e) => {
-						e.preventDefault();
-						const formData = new FormData(e.target);
-						const name = formData.get('name');
-						const message = formData.get('message');
+    // ============================================
+    // CONTOH 6: Styling
+    // ============================================
+    const styleCard = $.div(
+      { className: 'card' },
+      $.h2({}, '🎨 Style Manipulation'),
+      $.div(
+        { id: 'style-demo', className: 'demo-box item' },
+        'Style me!'
+      ),
+      $.div(
+        {},
+        $.button(
+          {
+            className: 'btn btn-primary',
+            onClick: () => {
+              style('#style-demo', {
+                background: 'linear-gradient(45deg, #667eea 0%, #764ba2 100%)',
+                color: 'white',
+                transform: 'scale(1.1)',
+                transition: 'all 0.3s'
+              });
+            }
+          },
+          '🎨 Gradient Style'
+        ),
+        $.button(
+          {
+            className: 'btn btn-success',
+            onClick: () => {
+              style('#style-demo', 'padding', '30px');
+              style('#style-demo', 'borderRadius', '20px');
+            }
+          },
+          '📏 Change Size'
+        ),
+        $.button(
+          {
+            className: 'btn btn-warning',
+            onClick: () => {
+              const bg = style('#style-demo', 'backgroundColor');
+              alert(`Current background: ${bg}`);
+            }
+          },
+          '🔍 Get Style'
+        ),
+        $.button(
+          {
+            className: 'btn btn-danger',
+            onClick: () => {
+              style('#style-demo', {
+                background: '',
+                color: '',
+                transform: '',
+                padding: '',
+                borderRadius: ''
+              });
+            }
+          },
+          '🔄 Reset Style'
+        )
+      ),
+      $.pre({}, $.code({}, `// Style Manipulation
+style('#el', { color: 'red', fontSize: '20px' });  // set multiple
+style('#el', 'color', 'blue');                      // set single
+const color = style('#el', 'color');                // get style`))
+    );
 
-						resultDiv.innerHTML = '';
-						resultDiv.appendChild(
-							$.div(
-								{},
-								$.strong({}, 'Nama: '),
-								name,
-								$.br(),
-								$.strong({}, 'Pesan: '),
-								message
-							)
-						);
-					}
-				},
-				$.label({}, 'Nama:'),
-				$.input({
-					type: 'text',
-					name: 'name',
-					placeholder: 'Masukkan nama anda',
-					required: true
-				}),
-				$.label({}, 'Pesan:'),
-				$.textarea({
-					name: 'message',
-					rows: 3,
-					placeholder: 'Tulis pesan anda',
-					required: true
-				}),
-				$.button(
-					{
-						type: 'submit',
-						className: 'btn btn-primary',
-						style: {
-							marginTop: '10px'
-						}
-					},
-					'📤 Kirim'
-				)
-			),
-			resultDiv
-		);
+    // ============================================
+    // CONTOH 7: Event Listeners
+    // ============================================
+    let clickCount = 0;
+    const eventCard = $.div(
+      { className: 'card' },
+      $.h2({}, '⚡ Event Listeners'),
+      $.div(
+        { className: 'demo-box' },
+        $.div({ id: 'click-box', className: 'item', style: { cursor: 'pointer' } }, 
+          `Click me! Count: ${clickCount}`
+        ),
+        $.div({ id: 'once-box', className: 'item', style: { cursor: 'pointer', marginTop: '10px' } }, 
+          'Click me once!'
+        ),
+        $.div(
+          { id: 'delegate-parent', style: { marginTop: '10px' } },
+          $.button({ className: 'btn btn-primary delegated' }, 'Delegated 1'),
+          $.button({ className: 'btn btn-success delegated' }, 'Delegated 2'),
+          $.button({ className: 'btn btn-info delegated' }, 'Delegated 3')
+        )
+      ),
+      $.pre({}, $.code({}, `// Event Listeners
+on.add('#el', 'click', handler);          // add listener
+on.remove('#el', 'click', handler);       // remove listener
+on.once('#el', 'click', handler);         // one-time listener
+on.delegate('#parent', 'click', '.child', handler);  // event delegation`))
+    );
 
-		// ============================================
-		// CONTOH 4: List Dinamis
-		// ============================================
-		const products = [{
-			id: 1,
-			name: 'Laptop',
-			price: 15000000,
-			image: 'https://via.placeholder.com/80/4A90E2/ffffff?text=Laptop'
-		},
-			{
-				id: 2,
-				name: 'Mouse',
-				price: 150000,
-				image: 'https://via.placeholder.com/80/50E3C2/ffffff?text=Mouse'
-			},
-			{
-				id: 3,
-				name: 'Keyboard',
-				price: 500000,
-				image: 'https://via.placeholder.com/80/F5A623/ffffff?text=Keyboard'
-			}];
+    // Event handlers
+    const clickHandler = () => {
+      clickCount++;
+      qs('#click-box').textContent = `Click me! Count: ${clickCount}`;
+    };
+    on.add('#click-box', 'click', clickHandler);
 
-		const productList = $.div(
-			{
-				className: 'card'
-			},
-			$.h2({}, 'Contoh 4: List Dinamis'),
-			...products.map(product =>
-				$.div(
-					{
-						className: 'product',
-						dataset: {
-							id: product.id
-						}
-					},
-					$.img({
-						src: product.image,
-						alt: product.name
-					}),
-					$.div(
-						{},
-						$.h4({
-							style: {
-								margin: '0 0 5px 0'
-							}
-						}, product.name),
-						$.p(
-							{
-								style: {
-									margin: 0, color: '#666'
-								}
-							},
-							`Rp ${product.price.toLocaleString('id-ID')}`
-						)
-					),
-					$.button(
-						{
-							className: 'btn btn-success',
-							onClick: () => alert(`Membeli ${product.name}`)
-						},
-						'🛒 Beli'
-					)
-				)
-			)
-		);
+    on.once('#once-box', 'click', () => {
+      qs('#once-box').textContent = '✅ Clicked! (won\'t trigger again)';
+      css.add('#once-box', 'highlight');
+    });
 
-		// ============================================
-		// CONTOH 5: Nested Elements Kompleks
-		// ============================================
-		const complexCard = $.div(
-			{
-				className: 'card'
-			},
-			$.h2({}, 'Contoh 5: Nested Elements'),
-			$.div(
-				{},
-				$.h3({}, 'Data Attributes & Styling'),
-				$.ul(
-					{
-						style: {
-							listStyle: 'none', padding: 0
-						}
-					},
-					$.li(
-						{
-							dataset: {
-								status: 'active', priority: 'high'
-							},
-							style: {
-								padding: '10px',
-								background: '#d4edda',
-								marginBottom: '5px',
-								borderRadius: '4px'
-							}
-						},
-						'✅ Task 1 - High Priority'
-					),
-					$.li(
-						{
-							dataset: {
-								status: 'pending', priority: 'medium'
-							},
-							style: {
-								padding: '10px',
-								background: '#fff3cd',
-								marginBottom: '5px',
-								borderRadius: '4px'
-							}
-						},
-						'⏳ Task 2 - Medium Priority'
-					),
-					$.li(
-						{
-							dataset: {
-								status: 'inactive', priority: 'low'
-							},
-							style: {
-								padding: '10px',
-								background: '#f8d7da',
-								marginBottom: '5px',
-								borderRadius: '4px'
-							}
-						},
-						'❌ Task 3 - Low Priority'
-					)
-				)
-			)
-		);
+    // Event delegation
+    on.delegate('#delegate-parent', 'click', '.delegated', function(e) {
+      alert(`Clicked: ${this.textContent}`);
+    });
 
-		// ============================================
-		// Mount semua ke DOM
-		// ============================================
-		mount(
-			'#app',
-			$.h1({}, '🚀 DOM Builder - Contoh Penggunaan'),
-			simpleCard,
-			buttonCard,
-			formCard,
-			productList,
-			complexCard
-		);
-	</script>
+    // ============================================
+    // CONTOH 8: Ready & Text
+    // ============================================
+    const utilityCard = $.div(
+      { className: 'card' },
+      $.h2({}, '🛠️ Utility Functions'),
+      $.div(
+        {},
+        $.p({}, 'DOM Ready status: ', 
+          $.strong({ style: { color: '#28a745' } }, '✓ Loaded')
+        ),
+        $.p({}, 'Text node: ', 
+          text('This is a text node created with text()')
+        )
+      ),
+      $.pre({}, $.code({}, `// Utility Functions
+ready(() => {
+  console.log('DOM is ready!');
+});
+
+const textNode = text('Hello World');
+mount('#app', textNode);`))
+    );
+
+    // ============================================
+    // Mount Everything
+    // ============================================
+    ready(() => {
+      mount(
+        '#app',
+        $.h1({ style: { textAlign: 'center' } }, '🚀 DOM Builder - Advanced Features'),
+        $.p({ style: { textAlign: 'center', color: '#666' } }, 
+          'Shortcuts untuk semua DOM methods yang sering digunakan'
+        ),
+        selectorCard,
+        manipulationCard,
+        insertCard,
+        classCard,
+        attrCard,
+        styleCard,
+        eventCard,
+        utilityCard
+      );
+    });
+  </script>
 </body>
 </html>
